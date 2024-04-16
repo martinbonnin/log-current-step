@@ -1,0 +1,21 @@
+fragment flowStep on Flow{
+    currentStep {
+        id
+        value
+    }
+}
+
+
+query getFlow {
+    flowClaimBarNext {
+        __typename
+    }
+}
+
+query getNestedFlow {
+    nested {
+        flows {
+            __typename
+        }
+    }
+}

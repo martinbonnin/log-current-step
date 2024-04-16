@@ -30,11 +30,15 @@ abstract class AddGraphQLFields: DefaultTask() {
             .map {
                 when (it) {
                     is GQLOperationDefinition -> it.copy(
-                        selections = it.selections.alwaysGreet(schema, schema.rootTypeNameFor(it.operationType))
+                        selections = it.selections.addFlowStep(schema, schema.rootTypeNameFor(it.operationType))
                     )
-                    is GQLFragmentDefinition -> it.copy(
-                        selections = it.selections.alwaysGreet(schema, it.typeCondition.name)
-                    )
+                    is GQLFragmentDefinition -> if (it.name != "flowStep") {
+                        it.copy(
+                            selections = it.selections.addFlowStep(schema, it.typeCondition.name)
+                        )
+                    } else {
+                        it
+                    }
                     else -> it
                 }
             }
@@ -49,21 +53,21 @@ abstract class AddGraphQLFields: DefaultTask() {
 
 
     @OptIn(ApolloExperimental::class)
-    private fun List<GQLSelection>.alwaysGreet(schema: Schema, parentType: String): List<GQLSelection> {
+    private fun List<GQLSelection>.addFlowStep(schema: Schema, parentType: String): List<GQLSelection> {
         val selections = this.map {
             when (it) {
                 is GQLField -> it.copy(
-                    selections = it.selections.alwaysGreet(schema, it.definitionFromScope(schema, parentType)!!.type.rawType().name)
+                    selections = it.selections.addFlowStep(schema, it.definitionFromScope(schema, parentType)!!.type.rawType().name)
                 )
                 is GQLFragmentSpread -> it
                 is GQLInlineFragment -> it.copy(
-                    selections = it.selections.alwaysGreet(schema, it.typeCondition?.name ?: parentType)
+                    selections = it.selections.addFlowStep(schema, it.typeCondition?.name ?: parentType)
                 )
             }
         }
 
-        return if (parentType == "Friend" && selections.none { it is GQLField && it.responseName() == "greet" }) {
-            selections + GQLField(null, null, "greet", emptyList(), emptyList(), emptyList())
+        return if (parentType == "Flow" && selections.none { it is GQLFragmentSpread && it.name == "flowStep" }) {
+            selections + GQLFragmentSpread(null, "flowStep", emptyList(), )
         } else {
             selections
         }

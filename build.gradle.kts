@@ -22,10 +22,13 @@ val wiring = setupGraphQLPreprocessor(file(schema), operations)
 apollo {
     service("service") {
         packageName.set("com.example")
+        codegenModels.set("responseBased")
         schemaFiles.from("src/main/graphql/schema.graphqls")
         srcDir(wiring.operations)
     }
 }
+
+kotlin.sourceSets.getByName("main").kotlin.srcDir(wiring.kotlin)
 dependencies {
     implementation("com.apollographql.apollo3:apollo-runtime")
     testImplementation(kotlin("test"))

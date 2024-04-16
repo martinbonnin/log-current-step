@@ -1,26 +1,26 @@
 type Query {
-    user: User
-    node: Node
-    friend: Friend!
+    flowClaimFooNext: Flow!
+    flowClaimBarNext: Flow!
+    flowClaimBazNext: Flow!
+    nested: Nested
 }
 
-interface Node {
+type Nested {
+    flows: [Flow]
+}
+
+
+type Flow {
     id: ID!
+    currentStep: FlowStep!
+    context: FlowContext!
 }
 
-type User implements Node {
+type FlowStep {
     id: ID!
-    name: String!
-    job: Job
-    friend: [Friend!]!
+    value: Int
 }
 
-enum Job {
-    engineer
-    designer
-    product_manager
-}
-
-type Friend {
-    greet: String
+type FlowContext {
+    name: String
 }

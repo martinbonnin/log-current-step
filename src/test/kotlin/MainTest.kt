@@ -1,37 +1,25 @@
-import com.example.AlwaysGreetQuery
-import com.example.fragment.QueryFragment
+import com.example.GetFlowQuery
+import com.example.GetNestedFlowQuery
+import com.example.fragment.FlowStep
 import kotlin.test.Test
 
 class MainTest {
     @Test
     fun testStuff() {
-        AlwaysGreetQuery.Data(
-            "Query",
-            AlwaysGreetQuery.Node(
-                "User",
-                onUser = AlwaysGreetQuery.OnUser(
-                    friend = listOf(
-                        AlwaysGreetQuery.Friend(
-                            "Friend",
-                            "Hello \uD83D\uDC4B"
-                        )
-                    )
-                )
-            ),
-            friend = AlwaysGreetQuery.Friend1(
-                "Friend",
-                greet = "Bonjour",
-            ),
-            queryFragment = QueryFragment(
-                user = QueryFragment.User(
-                    friend = listOf(
-                        QueryFragment.Friend(
-                            "Friend",
-                            greet = "Gutten Morgen"
-                        )
-                    )
+        val data = GetFlowQuery.Data(
+            flowClaimBarNext = GetFlowQuery.Data.FlowClaimBarNext(
+                __typename = "foobar",
+                currentStep = GetFlowQuery.Data.FlowClaimBarNext.CurrentStep(
+                    id = "bar",
+                    value = 42
                 )
             )
         )
+
+        com.example.generatedVisitors.get("getFlow")!!.visit(data) {
+            println("id: ${it.currentStep.id}")
+            println("value: ${it.currentStep.value}")
+        }
     }
 }
+
